@@ -4,13 +4,12 @@ const selector = (s) => document.querySelector(s);
 const todoInput = selector('.todo-input');
 const todoButton = selector('.todo-button');
 const todoList = selector('.todo-list');
+const todoFilter = selector('.todo-filter');
+const todoCount = selector('.todo-count');
 
-//functions
+//ajout d'élément
 const addTodo = (e) => {
   e.preventDefault();
-
-  const {target} = e;
-  console.log(e,target);
 
   todoList.innerHTML += `
       <div class="todo">
@@ -26,23 +25,59 @@ const addTodo = (e) => {
       </div>
     `;
 
-    todoInput.value = ""
+    todoInput.value = "";
 };
 
+todoButton.addEventListener('click', addTodo);
+
+//supprimerl'élément
 const deleteCheck = (e) => {
-
-
-  const {target} = e;
+  let {target} = e;
 
   if(target.classList[0] === "trash-btn"){
-    target.parentElement.remove();
+
+    target.parentElement.classList.add("fall");
+
+    target.parentElement.addEventListener('transitionend', () =>{
+      target.parentElement.remove();
+    })
+
   }
 
   if(target.classList[0] === "complete-btn"){
-    target.parentElement.classList.toggle("complete")
+    target.parentElement.classList.toggle("completed");
   }
 }
+todoList.addEventListener('click', deleteCheck);
 
 //ecouteurs
-todoButton.addEventListener('click', addTodo);
-todoList.addEventListener('click', deleteCheck);
+
+const filterTodo = (e) => {
+  const {target} = e;
+  const todos = document.querySelectorAll('.todo');
+  console.log(todos);
+
+  todos.forEach( todo => {
+    switch (target.value) {
+      case "all":
+        todo.style.display = "flex";
+        break;
+      case "completed":
+        if(todo.classList.contains('completed')) {
+          todo.style.display = "flex";
+        }else{
+          todo.style.display = "none";
+        }
+        break;
+      case "uncompleted":
+        if(!todo.classList.contains('completed')) {
+          todo.style.display = "flex";
+        }else{
+          todo.style.display = "none";
+        }
+        break;
+    }
+  });
+}
+
+todoFilter.addEventListener('input', filterTodo)
